@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS User;
+
+CREATE TABLE User (
+  id VARCHAR(250),
+  username VARCHAR(250) NOT NULL,
+  password VARCHAR(250) NOT NULL,
+  email VARCHAR(250) NOT NULL
+);
+
+INSERT INTO User (id, username, password, email) VALUES
+  ('ABCD','user1', 'password', 'user1@gmail.com'),
+  ('EFGH','user2', 'password', 'user2@gmail.com'),
+  ('IJKL','user3', 'password', 'user3@gmail.com');
