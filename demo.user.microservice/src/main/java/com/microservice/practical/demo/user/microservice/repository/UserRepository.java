@@ -11,4 +11,5 @@ import com.microservice.practical.demo.user.microservice.model.RegisterUserEntit
 public interface UserRepository extends JpaRepository<RegisterUserEntity, String> {
 
 	public Optional<RegisterUserEntity> findById(String id);
+	public Optional<RegisterUserEntity> findByUsername(String username);
 }

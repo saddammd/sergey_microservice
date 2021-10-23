@@ -10,4 +10,4 @@ CREATE TABLE User (
 INSERT INTO User (id, username, password, email) VALUES
   ('ABCD','user1', 'password', 'user1@gmail.com'),
   ('EFGH','user2', 'password', 'user2@gmail.com'),
-  ('IJKL','user3', 'password', 'user3@gmail.com');
+ ('IJKL','user3', 'password', 'user3@gmail.com');

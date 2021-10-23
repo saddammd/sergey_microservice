@@ -25,6 +25,14 @@ public class RegisterUserEntity {
 		this.password = password;
 		this.email = email;
 	}
+	@Override
+	public String toString() {
+		return "RegisterUserEntity [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
+				+ "]";
+	}
+	
+	
+	
 	
 	
 	

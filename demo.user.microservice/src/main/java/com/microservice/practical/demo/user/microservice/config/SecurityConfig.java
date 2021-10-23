@@ -1,0 +1,49 @@
+package com.microservice.practical.demo.user.microservice.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import com.microservice.practical.demo.user.microservice.service.UserService;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
+	
+	@Autowired
+	private UserService userService;
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable();
+		http.authorizeRequests().antMatchers("/**").hasIpAddress("192.168.1.7")
+		.and().addFilter(getAuthenticationFilter());
+		http.headers().frameOptions().disable();
+		super.configure(http);
+	}
+	
+
+@Bean	
+public BCryptPasswordEncoder bCryptPasswordEncoder() {
+return new BCryptPasswordEncoder();
+}
+	
+@Override
+@Bean(name=BeanIds.AUTHENTICATION_MANAGER)
+public AuthenticationManager authenticationManagerBean() throws Exception {
+	return super.authenticationManagerBean();
+}
+	
+private AuthenticationFilter getAuthenticationFilter() throws Exception {
+	AuthenticationFilter filter = new AuthenticationFilter(authenticationManagerBean(), userService);
+	filter.setFilterProcessesUrl("/login");
+	return filter;
+}
+
+}

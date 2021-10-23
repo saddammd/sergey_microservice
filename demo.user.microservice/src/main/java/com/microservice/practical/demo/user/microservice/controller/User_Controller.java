@@ -28,7 +28,7 @@ public class User_Controller {
 	public UserService userService;
 	
 	
-	@PostMapping("/users/register")
+	@PostMapping("/register")
 	public ResponseEntity<RegisterUser> registerUser(@RequestBody RegisterUser register_user) {
 				
 		RegisterUserEntity userEntity = new RegisterUserEntity();
@@ -48,7 +48,7 @@ public class User_Controller {
 		
 		RegisterUserEntity user = new RegisterUserEntity();
 		
-		if(userService.get(registerUser.getId())!=null) {
+		if(userService.getUser(registerUser.getId())!=null) {
 			
 			BeanUtils.copyProperties(registerUser, user);
 			
