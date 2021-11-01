@@ -3,6 +3,8 @@ package com.microservice.practical.demo.user.microservice.config;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.FilterChain;
@@ -79,10 +81,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		String name = authResult.getName();
 		Optional<RegisterUserEntity> userDetailsByUsername = userService.getUserDetailsByUsername(name);
 		
+		Map<String, String> claims = new HashMap<>();
+		claims.put("id", userDetailsByUsername.get().getId());
 			
 		 String token = Jwts.builder()
-		 .setSubject(userDetailsByUsername.get().getId()) 
-		 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("3600000")))
+		 .setSubject(userDetailsByUsername.get().getId())
+		 
+		 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("60000")))
 		 .signWith(SignatureAlgorithm.HS512, "1nc4jRjdO5enfUc4loN3q7gEb8fhr9O" )
 		 .compact(); 
 		 

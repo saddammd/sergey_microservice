@@ -1,12 +1,14 @@
 package com.microservice.practical.demo.user.microservice.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,8 @@ import com.microservice.practical.demo.user.microservice.model.RegisterUserEntit
 import com.microservice.practical.demo.user.microservice.repository.UserRepository;
 import com.microservice.practical.demo.user.microservice.service.UserService;
 import com.microservice.practical.demo.user.microservice.service.UserServiceImpl;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 @RestController
 public class User_Controller {
@@ -40,8 +44,11 @@ public class User_Controller {
 	
 	@GetMapping("/users")
 	public List<RegisterUserEntity> viewUsers () {
+		
+		System.out.println(userService.getUsers());
 		return userService.getUsers();
-	}
+		}
+	
 	
 	@PutMapping("/users")
 	public RegisterUserEntity update(@RequestBody RegisterUser registerUser) {
@@ -60,7 +67,7 @@ public class User_Controller {
 		
 		
 	}
-	
+	@PreAuthorize("principal == #id")
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<HttpStatus> delete(@PathVariable String id) {
 		
