@@ -1,8 +1,10 @@
 package com.microservice.practical.demo.user.microservice.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,11 +18,13 @@ import com.microservice.practical.demo.user.microservice.service.UserService;
 @Configuration
 @EnableWebSecurity(debug=true)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig extends WebSecurityConfigurerAdapter implements EnvironmentAware{
 	
 	@Autowired
 	private UserService userService;
-
+	
+	private Environment environment;
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
@@ -33,6 +37,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 	
 
+	@Override
+	public void setEnvironment(Environment environment) {
+		
+		this.environment = environment;
+		
+	}
+	
 @Bean	
 public BCryptPasswordEncoder bCryptPasswordEncoder() {
 return new BCryptPasswordEncoder();
@@ -45,7 +56,8 @@ public AuthenticationManager authenticationManagerBean() throws Exception {
 }
 	
 private AuthenticationFilter getAuthenticationFilter() throws Exception {
-	AuthenticationFilter filter = new AuthenticationFilter(authenticationManagerBean(), userService);
+	AuthenticationFilter filter = new AuthenticationFilter(authenticationManagerBean(), userService,
+			this.environment);
 	filter.setFilterProcessesUrl("/login");
 	return filter;
 }
@@ -56,5 +68,8 @@ private AuthorizationFilter getAuthorizationFilter() throws Exception {
 	return authenticationFilter;
 	
 }
+
+
+
 
 }

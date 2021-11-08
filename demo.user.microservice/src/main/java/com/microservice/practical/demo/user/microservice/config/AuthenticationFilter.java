@@ -3,8 +3,6 @@ package com.microservice.practical.demo.user.microservice.config;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.FilterChain;
@@ -13,12 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -26,28 +25,31 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservice.practical.demo.user.microservice.model.LoginUser;
 import com.microservice.practical.demo.user.microservice.model.RegisterUserEntity;
-import com.microservice.practical.demo.user.microservice.repository.UserRepository;
 import com.microservice.practical.demo.user.microservice.service.UserService;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	private LoginUser user;
 	
+	@Autowired
+	private Environment env;
 	
 	private UserService userService;
 	
 	private AuthenticationManager authenticationManager;
 
-	public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService
-			) {
+	public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, Environment environment) {
 		this.authenticationManager = authenticationManager;
 		this.userService = userService;
-			}
+		this.env = environment;
+	}
+	
 
-
+	
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
@@ -81,15 +83,16 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		String name = authResult.getName();
 		Optional<RegisterUserEntity> userDetailsByUsername = userService.getUserDetailsByUsername(name);
 		
-		Map<String, String> claims = new HashMap<>();
-		claims.put("id", userDetailsByUsername.get().getId());
-			
+		System.out.println("******************************");
+		System.out.println(this.env.getProperty("token.value"));
+		System.out.println("******************************");
+		
+		
 		 String token = Jwts.builder()
-		 .setSubject(userDetailsByUsername.get().getId())
-		 
-		 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("60000")))
-		 .signWith(SignatureAlgorithm.HS512, "1nc4jRjdO5enfUc4loN3q7gEb8fhr9O" )
-		 .compact(); 
+		.setSubject(userDetailsByUsername.get().getId())
+		.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong("60000")))
+		.signWith(SignatureAlgorithm.HS512, env.getProperty("token.value") )
+		.compact(); 
 		 
 		 response.addHeader("token", token); 
 		 response.addHeader("userId", userDetailsByUsername.get().getId());

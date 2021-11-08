@@ -1,12 +1,12 @@
 package com.microservice.practical.demo.user.microservice.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,11 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.microservice.practical.demo.user.microservice.model.RegisterUser;
 import com.microservice.practical.demo.user.microservice.model.RegisterUserEntity;
-import com.microservice.practical.demo.user.microservice.repository.UserRepository;
 import com.microservice.practical.demo.user.microservice.service.UserService;
-import com.microservice.practical.demo.user.microservice.service.UserServiceImpl;
-
-import io.jsonwebtoken.ExpiredJwtException;
 
 @RestController
 public class User_Controller {
@@ -32,17 +28,17 @@ public class User_Controller {
 	public UserService userService;
 	
 	
-	@PostMapping("/register")
+	@PostMapping(value = "/register", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+									  consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	public ResponseEntity<RegisterUser> registerUser(@RequestBody RegisterUser register_user) {
 				
 		RegisterUserEntity userEntity = new RegisterUserEntity();
 		BeanUtils.copyProperties(register_user, userEntity);
-		userService.Save(userEntity);
-		
+		userService.Save(userEntity);		
 		return new ResponseEntity<RegisterUser>(register_user, HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/users")
+	@GetMapping(value = "/users", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public List<RegisterUserEntity> viewUsers () {
 		
 		System.out.println(userService.getUsers());
@@ -50,7 +46,7 @@ public class User_Controller {
 		}
 	
 	
-	@PutMapping("/users")
+	@PutMapping(value = "/users", consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public RegisterUserEntity update(@RequestBody RegisterUser registerUser) {
 		
 		RegisterUserEntity user = new RegisterUserEntity();
